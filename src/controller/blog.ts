@@ -47,6 +47,16 @@ export const getAllBlogs = TryCatch(async(req,res)=>{
 
 export const getSingleBlog = TryCatch(async(req,res)=>{
     const {id} = req.params;    
+
+    const cacheKey = `blog:${id}`
+    const cached = await getCache(cacheKey);
+
+    if(cached){
+        console.log('Serviing from Redis cache');
+        res.json(cached);
+        return;
+    }
+
     const blog = await sql`SELECT * FROM blogs WHERE id = ${id};`;
     if(blog.length === 0){
         return res.status(404).json({message:"Blog not found"});
@@ -58,5 +68,9 @@ export const getSingleBlog = TryCatch(async(req,res)=>{
     }
     const {data} = await axios.get(`${process.env.USER_SERVICE_URL}/api/v1/user/${blog[0].author}`);
 
-    res.status(200).json({message:"Blog fetched successfully", blog: blog[0], author: data});
+    const responseData = {message:"Blog fetched successfully", blog: blog[0], author: data}
+
+    await setCahce(cacheKey, responseData, 3600)
+
+    res.status(200).json(responseData);
 });
