@@ -2,6 +2,7 @@ import express, { type Request, type Response } from 'express';
 import dotenv from 'dotenv';
 import blogRoutes from './routes/blog.js';
 import { connectRedis } from './redis/redis.client.js';
+import { startCacheConsumer } from './utils/rabbitMQConsumer.js';
 
 
 
@@ -12,7 +13,11 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// redist connection establish
+// RabbitMQ service 
+startCacheConsumer();
+
+
+// redis connection establish
 (async()=>{
   // Connect Redis on startup
   await connectRedis();
