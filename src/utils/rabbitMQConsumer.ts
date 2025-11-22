@@ -138,10 +138,14 @@ async function handleInvalidation(patterns: string[]) {
     }
 
     // Rebuild default blog cache
-    const cacheKey = "blogs::"; // empty search + empty category
+    
+    const category ='';
+    const searchQuery = '';
+
+    const cacheKeys = `blogs:${searchQuery}:${category}`;
 
     const blogs = await sql`SELECT * FROM blogs ORDER BY created_at DESC`;
-    await redisClient.set(cacheKey, JSON.stringify(blogs), { EX: 3600 });
+    await redisClient.set(cacheKeys, JSON.stringify(blogs), { EX: 3600 });
 
-    console.log("🔄 Cache rebuilt:", cacheKey);
+    console.log("🔄 Cache rebuilt:", cacheKeys);
 }
