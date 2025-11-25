@@ -22,12 +22,12 @@ app.use(cors({
 }));
 
 // Manual OPTIONS handler (required for Vercel)
-app.options("*", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "https://you-tube-blog-web.vercel.app");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
-  res.status(200).end();
-});
+// app.options("*", (req, res) => {
+//   res.setHeader("Access-Control-Allow-Origin", "https://you-tube-blog-web.vercel.app");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
+//   res.status(200).end();
+// });
 
 // RabbitMQ service 
 startCacheConsumer();
