@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import blogRoutes from './routes/blog.js';
 import { connectRedis } from './redis/redis.client.js';
 import { startCacheConsumer } from './utils/rabbitMQConsumer.js';
-
+import cors from 'cors';
 
 
 dotenv.config();    
@@ -12,6 +12,8 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(cors());
 
 // RabbitMQ service 
 startCacheConsumer();
