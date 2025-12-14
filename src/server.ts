@@ -30,16 +30,20 @@ app.use(express.urlencoded({ extended: true }));
 //   res.status(200).end();
 // });
 
-// RabbitMQ service 
-startCacheConsumer();
+
 
 
 // redis connection establish
-(async () => {
-  // Connect Redis on startup
-  await connectRedis();
+// (async () => {})
 
-})
+
+// Connect Redis on startup
+await connectRedis();
+
+// RabbitMQ service 
+await startCacheConsumer();
+
+
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
