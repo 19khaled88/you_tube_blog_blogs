@@ -34,14 +34,15 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // redis connection establish
-// (async () => {})
+// (async () => {
+// })
 
 
 // Connect Redis on startup
 await connectRedis();
 
 // RabbitMQ service 
-await startCacheConsumer();
+// await startCacheConsumer();
 
 
 
