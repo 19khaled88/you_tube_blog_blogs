@@ -14,6 +14,7 @@ const allowedOrigins = [
   "http://localhost:3005",
 ];
 
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -26,13 +27,22 @@ app.use(
         callback(new Error("CORS policy violation"));
       }
     },
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    methods: ["GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"],
     credentials: true,
-    allowedHeaders: "Content-Type, Authorization",
+    allowedHeaders: ["Content-Type, Authorization"],
   })
 );
+
+
+
+
+ // (important for vercel)
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Optional but safe:
+app.options(/.*/, cors());
 
 // Manual OPTIONS handler (required for Vercel)
 // app.options("*", (req, res) => {
