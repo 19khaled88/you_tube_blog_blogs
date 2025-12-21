@@ -15,26 +15,33 @@ const allowedOrigins = [
 ];
 
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // allow server to server / postman 
-      if(!origin) return callback(null, true);
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       // allow server to server / postman 
+//       if(!origin) return callback(null, true);
 
-      if(allowedOrigins.indexOf(origin)){
-        callback(null, true);
-      }else {
-        callback(new Error("CORS policy violation"));
-      }
-    },
-    methods: ["GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"],
-    credentials: true,
-    allowedHeaders: ["Content-Type, Authorization"],
-  })
-);
+//       if(allowedOrigins.indexOf(origin)){
+//         callback(null, true);
+//       }else {
+//         callback(new Error("CORS policy violation"));
+//       }
+//     },
+//     methods: ["GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"],
+//     credentials: true,
+//     allowedHeaders: ["Content-Type, Authorization"],
+//   })
+// );
 
+const corsOptions = {
+  origin: [
+    "https://you-tube-blog-web.vercel.app",
+    "http://localhost:3005",
+  ],
+  credentials: true,
+};
 
-
+app.use(cors(corsOptions));
 
  // (important for vercel)
 
