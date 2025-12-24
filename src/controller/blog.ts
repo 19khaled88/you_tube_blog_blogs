@@ -2,6 +2,7 @@ import axios from "axios";
 import { sql } from "../utils/db.js";
 import TryCatch from "../utils/TryCatch.js";
 import { getCache, setCahce } from "../redis/redis.cache.js";
+import type { AuthenticationRequest } from "../middleware/isAuth.js";
 
 export const getAllBlogs = TryCatch(async (req, res) => {
   const { searchQuery = "", category = "" } = req.query;
@@ -120,3 +121,44 @@ export const getSingleBlog = TryCatch(async (req, res) => {
 
   res.status(200).json(responseData);
 });
+
+
+export const addComment = TryCatch(async(req:AuthenticationRequest,res)=>{
+  const {id:blogid} = req.params;
+  const {comment} = req.body;
+
+  await sql`INSERT INTO comments (comment, blogid, userid, username) VALUES (${comment},${blogid},${req.user?._id},${req.user?.name}) RETURNING *`;
+
+  res.json({
+    message:"Comment Added",
+  });
+});
+
+
+export const getAllComments = TryCatch(async(req, res)=>{
+  const {id} = req.params;
+
+  const comments = await sql`SELECT * FROM comments WHERE blogid = ${id} ORDER BY created_at DESC`;
+  res.json(comments);
+});
+
+
+export const deleteComment = TryCatch(async(req:AuthenticationRequest, res)=>{
+  const {commentId} = req.params;
+
+  const comment = await sql`SELECT * FROM comments WHERE id = ${commentId}`;
+
+  
+
+  if(comment[0] && comment[0].userid !== req.user?._id){
+    res.status(401).json({
+      message:"You are not owner of this comment", 
+    })
+    return;
+  }
+
+  await sql`DELEET FROM comments WHERE id = ${commentId}`;
+  res.json({
+    message:'Comment Deleted', 
+  });
+})
