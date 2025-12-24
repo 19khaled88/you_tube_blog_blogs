@@ -190,7 +190,7 @@ export const deleteComment = TryCatch(async(req:AuthenticationRequest, res)=>{
     return;
   }
 
-  await sql`DELEET FROM comments WHERE id = ${commentId}`;
+  await sql`DELETE FROM comments WHERE id = ${commentId}`;
   res.json({
     message:'Comment Deleted', 
   });
