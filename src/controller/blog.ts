@@ -139,7 +139,10 @@ export const getAllComments = TryCatch(async(req, res)=>{
   const {id} = req.params;
 
   const comments = await sql`SELECT * FROM comments WHERE blogid = ${id} ORDER BY created_at DESC`;
-  res.json(comments);
+  res.json({
+    message:'Comments retrieved successfully',
+    comments
+  });
 });
 
 
