@@ -50,7 +50,7 @@ export const getAllBlogs = TryCatch(async (req, res) => {
   // --------------------------
   // STORE IN CACHE FOR 1 HOUR
   // --------------------------
-  await setCahce(cacheKey, blogs, 3600);
+  await setCahce(cacheKey, blogs, 180);
 
   return res.status(200).json({
     success: true,
@@ -116,7 +116,7 @@ export const getSingleBlog = TryCatch(async (req, res) => {
   // --------------------------
   // SAVE TO CACHE FOR 1 HOUR
   // --------------------------
-  await setCahce(cacheKey, responseData, 3600);
+  await setCahce(cacheKey, responseData, 180);
 
   res.status(200).json(responseData);
 });
