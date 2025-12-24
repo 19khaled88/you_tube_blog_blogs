@@ -4,6 +4,10 @@ import TryCatch from "../utils/TryCatch.js";
 import { getCache, setCahce } from "../redis/redis.cache.js";
 import type { AuthenticationRequest } from "../middleware/isAuth.js";
 
+
+// const USER_SERVICE = process.env.USER_SERVICE_URL;
+
+
 export const getAllBlogs = TryCatch(async (req, res) => {
   const { searchQuery = "", category = "" } = req.query;
 
@@ -138,7 +142,33 @@ export const addComment = TryCatch(async(req:AuthenticationRequest,res)=>{
 export const getAllComments = TryCatch(async(req, res)=>{
   const {id} = req.params;
 
+  // 1️⃣ Fetch comments from SQL
   const comments = await sql`SELECT * FROM comments WHERE blogid = ${id} ORDER BY created_at DESC`;
+
+  // // 2️⃣ Extract unique userIds
+  // const userIds = [...new Set(comments.map(c => c.userid))];
+
+  //  // 3️⃣ Fetch users from user microservice (MongoDB)
+  // const { data: users } = await axios.post(
+  //   `${USER_SERVICE}/api/v1/users/bulk`,
+  //   { ids: userIds }
+  // );
+
+  // // 4️⃣ Map users by id for quick lookup
+  // const userMap = new Map(
+  //   users.map((u: any) => [u._id.toString(), u])
+  // );
+
+  // 5️⃣ Merge user info into comments
+  // const enrichedComments = comments.map(c => {
+  //   const user = userMap.get(c.userid);
+  //   return {
+  //     ...c,
+  //     username: user?.name || "Unknown",
+  //     userImage: user?.image || null,
+  //   };
+  // });
+
   res.json({
     message:'Comments retrieved successfully',
     comments
