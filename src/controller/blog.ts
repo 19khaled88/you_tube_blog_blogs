@@ -4,9 +4,7 @@ import TryCatch from "../utils/TryCatch.js";
 import { getCache, setCahce } from "../redis/redis.cache.js";
 import type { AuthenticationRequest } from "../middleware/isAuth.js";
 
-
 // const USER_SERVICE = process.env.USER_SERVICE_URL;
-
 
 export const getAllBlogs = TryCatch(async (req, res) => {
   const { searchQuery = "", category = "" } = req.query;
@@ -101,13 +99,12 @@ export const getSingleBlog = TryCatch(async (req, res) => {
     );
     author = data;
   } catch (error) {
-    if(axios.isAxiosError(error)){
-
-        return res.status(error.response?.status || 500).json({
-          success: false,
-          message:
-            error.response?.data?.message || "Failed to fetch author details",
-        });
+    if (axios.isAxiosError(error)) {
+      return res.status(error.response?.status || 500).json({
+        success: false,
+        message:
+          error.response?.data?.message || "Failed to fetch author details",
+      });
     }
   }
 
@@ -126,24 +123,23 @@ export const getSingleBlog = TryCatch(async (req, res) => {
   res.status(200).json(responseData);
 });
 
-
-export const addComment = TryCatch(async(req:AuthenticationRequest,res)=>{
-  const {id:blogid} = req.params;
-  const {comment} = req.body;
+export const addComment = TryCatch(async (req: AuthenticationRequest, res) => {
+  const { id: blogid } = req.params;
+  const { comment } = req.body;
 
   await sql`INSERT INTO comments (comment, blogid, userid, username) VALUES (${comment},${blogid},${req.user?._id},${req.user?.name}) RETURNING *`;
 
   res.json({
-    message:"Comment Added",
+    message: "Comment Added",
   });
 });
 
-
-export const getAllComments = TryCatch(async(req, res)=>{
-  const {id} = req.params;
+export const getAllComments = TryCatch(async (req, res) => {
+  const { id } = req.params;
 
   // 1️⃣ Fetch comments from SQL
-  const comments = await sql`SELECT * FROM comments WHERE blogid = ${id} ORDER BY created_at DESC`;
+  const comments =
+    await sql`SELECT * FROM comments WHERE blogid = ${id} ORDER BY created_at DESC`;
 
   // // 2️⃣ Extract unique userIds
   // const userIds = [...new Set(comments.map(c => c.userid))];
@@ -170,28 +166,40 @@ export const getAllComments = TryCatch(async(req, res)=>{
   // });
 
   res.json({
-    message:'Comments retrieved successfully',
-    comments
+    message: "Comments retrieved successfully",
+    comments,
   });
 });
 
+export const deleteComment = TryCatch(
+  async (req: AuthenticationRequest, res) => {
+    const { id } = req.params;
 
-export const deleteComment = TryCatch(async(req:AuthenticationRequest, res)=>{
-  const {commentId} = req.params;
+    const comment = await sql`SELECT * FROM comments WHERE id = ${id}`;
 
-  const comment = await sql`SELECT * FROM comments WHERE id = ${commentId}`;
+    if (!comment || comment === undefined) {
+      res.json({
+        message: "No comment found!",
+      });
+      return;
+    }
 
-  
+    if (comment[0] && comment[0].userid !== req.user?._id) {
+      res.status(401).json({
+        message: "You are not owner of this comment",
+      });
+      return;
+    }
 
-  if(comment[0] && comment[0].userid !== req.user?._id){
-    res.status(401).json({
-      message:"You are not owner of this comment", 
-    })
-    return;
+    const isDelete = await sql`DELETE FROM comments WHERE id = ${id}`;
+    if (isDelete) {
+      res.json({
+        message: "Comment Deleted",
+      });
+    } else {
+      res.json({
+        message: "Comment Deleted",
+      });
+    }
   }
-
-  await sql`DELETE FROM comments WHERE id = ${commentId}`;
-  res.json({
-    message:'Comment Deleted', 
-  });
-})
+);
