@@ -125,9 +125,9 @@ export const getSingleBlog = TryCatch(async (req, res) => {
 
 export const addComment = TryCatch(async (req: AuthenticationRequest, res) => {
   const { id: blogid } = req.params;
-  const { comment } = req.body;
+  const { comment,avatarImage } = req.body;
 
-  await sql`INSERT INTO comments (comment, blogid, userid, username) VALUES (${comment},${blogid},${req.user?._id},${req.user?.name}) RETURNING *`;
+  await sql`INSERT INTO comments (comment, blogid, userid, username,avatar) VALUES (${comment},${blogid},${req.user?._id},${req.user?.name},${avatarImage}) RETURNING *`;
 
   res.json({
     message: "Comment Added",
