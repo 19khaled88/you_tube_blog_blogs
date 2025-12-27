@@ -173,10 +173,12 @@ export const getAllComments = TryCatch(async (req, res) => {
 
 export const deleteComment = TryCatch(
   async (req: AuthenticationRequest, res) => {
-    const { id } = req.params;
+    const { id, userId } = req.params;
 
+    
     const comment = await sql`SELECT * FROM comments WHERE id = ${id}`;
 
+    console.log(comment,userId)
     if (!comment || comment === undefined) {
       res.json({
         message: "No comment found!",
@@ -184,9 +186,16 @@ export const deleteComment = TryCatch(
       return;
     }
 
-    if (comment[0] && comment[0].userid !== req.user?._id) {
+    // if (comment[0] && comment[0].userid !== req.user?._id) {
+    //   res.status(401).json({
+    //     message: "You are not owner of this comment",
+    //   });
+    //   return;
+    // }
+
+    if(comment[0] && comment[0].userId !== userId){
       res.status(401).json({
-        message: "You are not owner of this comment",
+        message:'You are not the owner of this comment'
       });
       return;
     }
