@@ -9,6 +9,6 @@ router.get('/blog/all', getAllBlogs);
 
 router.post('/comment/:id', isAuth, addComment);
 router.get('/comments/:id', getAllComments);
-router.delete('/commentDelete/:id',isAuth, deleteComment);
+router.delete('/commentDelete/:id/:userId',isAuth, deleteComment);
 
 export default router;
