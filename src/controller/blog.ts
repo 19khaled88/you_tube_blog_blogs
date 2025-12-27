@@ -178,7 +178,7 @@ export const deleteComment = TryCatch(
     
     const comment = await sql`SELECT * FROM comments WHERE id = ${id}`;
 
-    console.log(comment,userId)
+    
     if (!comment || comment === undefined) {
       res.json({
         message: "No comment found!",
@@ -193,7 +193,8 @@ export const deleteComment = TryCatch(
     //   return;
     // }
 
-    if(comment[0] && comment[0].userId !== userId){
+    
+    if(comment[0] && comment[0].userid !== userId){
       res.status(401).json({
         message:'You are not the owner of this comment'
       });
