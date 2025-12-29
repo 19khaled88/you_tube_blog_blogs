@@ -245,7 +245,21 @@ export const saveBlog = TryCatch(async(req:AuthenticationRequest, res)=>{
 });
 
 export const savedBlogs=TryCatch(async (req:AuthenticationRequest, res)=>{
-    const ifExist = await sql`SELECT * FROM savedblogs`;
+    // const ifExist = await sql`SELECT * FROM savedblogs`;
+
+  //   const userId = req.user?._id;
+
+
+  //   const ifExist = await sql`
+  //   SELECT b.*, s.userid, s.blogid AS saved_blogid, s.created_at AS saved_at
+  //   FROM savedblogs s
+  //   JOIN blogs b ON s.blogid = b.id
+  //   ${userId ? sql`WHERE s.userid = ${userId}` : sql``}
+  //   ORDER BY s.created_at DESC
+  // `;
+
+  const ifExist = await sql`SELECT b.id, b.title, b.description, b.blogcontent, b.image, b.category, b.author, b.created_at, b.avatar, s.userid, s.created_at FROM blogs b INNER JOIN savedblogs s ON b.id::text = s.blogid ORDER BY s.created_at DESC`;
+
     res.json({
       message:'Found saved blog',
       data:ifExist
