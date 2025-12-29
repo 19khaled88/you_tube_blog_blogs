@@ -267,3 +267,52 @@ export const savedBlogs=TryCatch(async (req:AuthenticationRequest, res)=>{
     return;
 
 });
+
+export const blogreaction = TryCatch(async(req:AuthenticationRequest, res)=>{
+  const {blogid} = req.params;
+  const {reaction} = req.body;
+  const userId = req.user?._id;
+
+
+  if(![1,-1].includes(reaction)){
+    return res.status(400).json({message:'Invalid reaction value'});
+  }
+
+  
+  const data = await sql`
+    INSERT INTO blog_reactions (blogid, userid, reaction) VALUES (${blogid}, ${userId}, ${reaction})
+    ON CONFLICT (blogid, userid)
+    DO UPDATE SET reaction = ${reaction}, created_at =NOW()
+  `;
+
+ 
+  // Count likes/dislikes for this blog
+    const counts = await sql`
+      SELECT 
+        SUM(CASE WHEN reaction = 1 THEN 1 ELSE 0 END) AS likes,
+        SUM(CASE WHEN reaction = -1 THEN 1 ELSE 0 END) AS dislikes
+      FROM blog_reactions
+      WHERE blogid = ${blogid}
+    `;
+
+    res.json({ message: 'Reaction saved', counts: counts[0] });
+});
+
+
+export const getBlogreaction = TryCatch(async(req:AuthenticationRequest, res)=>{
+  const {blogid} = req.params;
+ 
+ 
+  // Count likes/dislikes for this blog
+    const counts = await sql`
+      SELECT 
+        SUM(CASE WHEN reaction = 1 THEN 1 ELSE 0 END) AS likes,
+        SUM(CASE WHEN reaction = -1 THEN 1 ELSE 0 END) AS dislikes
+      FROM blog_reactions
+      WHERE blogid = ${blogid}
+    `;
+
+    res.json({ counts: counts[0] });
+});
+
+
